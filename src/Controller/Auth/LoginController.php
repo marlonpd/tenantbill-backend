@@ -86,7 +86,10 @@ class LoginController extends AbstractController
         $response = [
             'status'    => 200,
             'token'     => $JWTManager->create($user),
-            'user'      => $this->serializer->serialize($userClone, JsonEncoder::FORMAT),
+            'user'      => [
+                'id' => $user->getId(),
+                'username' => $user->getUsername(),
+            ],//$this->serializer->serialize($userClone, JsonEncoder::FORMAT),
             'message'   => '',
         ];    
 

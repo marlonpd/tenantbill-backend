@@ -9,8 +9,7 @@ final class UserFactory
 {
     public function createFormRequest(Request $request): User 
     {
-        $content =json_decode($request->getContent(), true);
-        $data = $content;//['credentials'];
+        $data =json_decode($request->getContent(), true);
 
         $user = new User();
   

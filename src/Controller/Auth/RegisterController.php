@@ -48,7 +48,7 @@ class RegisterController extends AbstractController
      */
     public function index(Request $request, ValidatorInterface $validator) {
 
-        $data =json_decode($request->getContent(), true);
+        $data = json_decode($request->getContent(), true);
 
         if (empty($data['email']) || empty($data['username']) || empty($data['password']) ) {
 
@@ -109,6 +109,7 @@ class RegisterController extends AbstractController
         $this->userRepository->save($user);
 
         $response = [
+            'status'    => 'success',
             'message'   => 'Successfully created an account.',
         ];   
 
