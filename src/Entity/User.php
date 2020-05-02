@@ -45,9 +45,15 @@ class User implements UserInterface
      */
     private $tenants;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\PowerRate", mappedBy="owner")
+     */
+    private $powerRates;
+
     public function __construct()
     {
         $this->tenants = new ArrayCollection();
+        $this->powerRates = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -165,6 +171,37 @@ class User implements UserInterface
             // set the owning side to null (unless already changed)
             if ($tenant->getOwner() === $this) {
                 $tenant->setOwner(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|PowerRate[]
+     */
+    public function getPowerRates(): Collection
+    {
+        return $this->powerRates;
+    }
+
+    public function addPowerRate(PowerRate $powerRate): self
+    {
+        if (!$this->powerRates->contains($powerRate)) {
+            $this->powerRates[] = $powerRate;
+            $powerRate->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removePowerRate(PowerRate $powerRate): self
+    {
+        if ($this->powerRates->contains($powerRate)) {
+            $this->powerRates->removeElement($powerRate);
+            // set the owning side to null (unless already changed)
+            if ($powerRate->getOwner() === $this) {
+                $powerRate->setOwner(null);
             }
         }
 
