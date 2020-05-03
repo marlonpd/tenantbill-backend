@@ -63,6 +63,34 @@ class TenantController extends AbstractController
     }
 
     /**
+     * @Route("/api/tenant/{tenantId}/get", methods={"GET"}, name="fetch_tenant")
+     */
+    public function tenant(int $tenantId, SerializerInterface $serializer)
+    {
+        $tenant = $this->tenantRepository->find($tenantId);
+
+        if (empty($tenant)) {
+            $response = [
+                'errors'   => 'Tenant not found!',
+            ];    
+    
+            return $this->respond($response);
+        }
+
+        $response = [
+            'tenant'    => [
+                'id'                    => $tenant->getId(),
+                'name'                  => $tenant->getName(),
+                'meterNumber'           => $tenant->getMeterNumber(),
+                'meterInitialReading'   => $tenant->getMeterInitialReading()
+            ],
+            'message'   => '',
+        ];    
+
+        return $this->respond($response);
+    }
+
+    /**
      * @Route("/api/tenant/create", methods={"POST"}, name="create_tenant")
      */
     public function create(Request $request, SerializerInterface $serializer)
@@ -85,8 +113,9 @@ class TenantController extends AbstractController
 
         $response = [
             'tenant'    => [
-                'id'    => $tenant->getId(),
-                'name'  => $tenant->getName()
+                'id'            => $tenant->getId(),
+                'name'          => $tenant->getName(),
+                'meterNumber'   => $tenant->getMeterNumber()
             ],
             'message'   => 'Successfully added new tenant!',
         ];    

@@ -42,6 +42,17 @@ class TenantRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
+    /*public function find($id): Tenant
+    {
+        return $this->createQueryBuilder('t')
+            ->andWhere('t.id = :val')
+            ->setParameter('val', $id)
+            ->orderBy('t.id', 'ASC')
+            ->setMaxResults(10)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }*/
+
     // /**
     //  * @return Tenant[] Returns an array of Tenant objects
     //  */

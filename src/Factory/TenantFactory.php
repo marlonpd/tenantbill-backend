@@ -14,6 +14,9 @@ final class TenantFactory
         $tenant = new Tenant();
   
         $tenant->setName($data['name']);
+        $tenant->setMeterNumber($data['meterNumber']);
+        $tenant->setMeterInitialReading($data['meterInitialReading']);
+
         $tenant->setOwner($user);
 
         return $tenant;

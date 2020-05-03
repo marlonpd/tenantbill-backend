@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
@@ -25,10 +27,32 @@ class Tenant
     private $name;
 
     /**
+    * @Groups({"primary"})
+     * @ORM\Column(type="string", length=120)
+     */
+    private $meterNumber;
+
+    /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="tenants")
      * @ORM\JoinColumn(nullable=false)
      */
     private $owner;
+
+    /**
+    * @Groups({"primary"})
+     * @ORM\Column(type="float", length=120)
+     */
+    private $meterInitialReading;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\MeterReading", mappedBy="tenant")
+     */
+    private $meterReadings;
+
+    public function __construct()
+    {
+        $this->meterReadings = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -47,6 +71,18 @@ class Tenant
         return $this;
     }
 
+    public function getMeterNumber(): ?string
+    {
+        return $this->meterNumber;
+    }
+
+    public function setMeterNumber(string $meterNumber): self
+    {
+        $this->meterNumber = $meterNumber;
+
+        return $this;
+    }
+
     public function getOwner(): ?User
     {
         return $this->owner;
@@ -55,6 +91,49 @@ class Tenant
     public function setOwner(?User $owner): self
     {
         $this->owner = $owner;
+
+        return $this;
+    }
+
+    public function getMeterInitialReading(): ?float
+    {
+        return $this->meterInitialReading;
+    }
+
+    public function setMeterInitialReading(float $meterInitialReading): self
+    {
+        $this->meterInitialReading = $meterInitialReading;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|MeterReading[]
+     */
+    public function getMeterReadings(): Collection
+    {
+        return $this->meterReadings;
+    }
+
+    public function addMeterReading(MeterReading $meterReading): self
+    {
+        if (!$this->meterReadings->contains($meterReading)) {
+            $this->meterReadings[] = $meterReading;
+            $meterReading->setTenant($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMeterReading(MeterReading $meterReading): self
+    {
+        if ($this->meterReadings->contains($meterReading)) {
+            $this->meterReadings->removeElement($meterReading);
+            // set the owning side to null (unless already changed)
+            if ($meterReading->getTenant() === $this) {
+                $meterReading->setTenant(null);
+            }
+        }
 
         return $this;
     }

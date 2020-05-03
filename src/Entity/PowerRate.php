@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\PowerRateRepository")
@@ -17,19 +18,20 @@ class PowerRate
     private $id;
 
     /**
+     * @Groups({"primary"})
      * @ORM\Column(type="float")
      */
     private $rate;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="powerRates")
-     * @Groups({"primary"})
+
      * @ORM\JoinColumn(nullable=false)
      */
     private $owner;
 
     /**
-     * Groups({"primary"})
+     * @Groups({"primary"})
      * @ORM\Column(type="datetime")
      */
     private $created;
