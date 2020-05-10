@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\MeterReadingRepository")
@@ -23,36 +24,43 @@ class MeterReading
     private $tenant;
 
     /**
+     * @Groups({"primary"})
      * @ORM\Column(type="datetime", nullable=true)
      */
     private $from_date;
 
     /**
+     * @Groups({"primary"})
      * @ORM\Column(type="datetime", nullable=true)
      */
     private $to_date;
 
     /**
+     * @Groups({"primary"})
      * @ORM\Column(type="float")
      */
     private $reading_kwh;
 
     /**
+     * @Groups({"primary"})
      * @ORM\Column(type="float", nullable=true)
      */
     private $consumed_kwh;
 
     /**
+     * @Groups({"primary"})
      * @ORM\Column(type="float", nullable=true)
      */
     private $rate;
 
     /**
+     * @Groups({"primary"})
      * @ORM\Column(type="float", nullable=true)
      */
     private $bill;
 
     /**
+     * @Groups({"primary"})
      * @ORM\Column(type="datetime")
      */
     private $created;

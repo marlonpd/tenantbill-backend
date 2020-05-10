@@ -42,6 +42,19 @@ class TenantRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
+    public function isOwner(int $tenantId, int $ownerId): bool
+    {
+        return $this->createQueryBuilder('t')
+            ->where('t.id = :id')
+            ->andWhere('t.owner = :ownerId')
+            ->setParameter('id', $tenantId)
+            ->setParameter('ownerId', $ownerId)
+            ->orderBy('t.id', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult() !== null ? true : false;
+    }
+
     /*public function find($id): Tenant
     {
         return $this->createQueryBuilder('t')

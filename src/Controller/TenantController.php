@@ -9,6 +9,7 @@ use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use App\Repository\UserRepository;
 use App\Repository\TenantRepository;
+use App\Repository\PowerRateRepository;
 use App\Factory\TenantFactory;
 use App\Traits\ResponseTrait;
 
@@ -20,6 +21,11 @@ class TenantController extends AbstractController
      * @var UserRepository
      */
     private $userRepository;
+
+    /**
+     * @var PowerRateRepository
+     */
+    private $powerRateRepository;
 
     /**
      * @var TenantRepository
@@ -37,11 +43,13 @@ class TenantController extends AbstractController
 
     public function __construct(
         UserRepository $userRepository, 
+        PowerRateRepository $powerRateRepository,
         TenantRepository $tenantRepository,
         TenantFactory $tenantFactory,
         SerializerInterface $serializer) 
     {
         $this->tenantRepository = $tenantRepository;
+        $this->powerRateRepository = $powerRateRepository;
         $this->userRepository = $userRepository;
         $this->tenantFactory = $tenantFactory;
         $this->serializer = $serializer;
@@ -65,7 +73,7 @@ class TenantController extends AbstractController
     /**
      * @Route("/api/tenant/{tenantId}/get", methods={"GET"}, name="fetch_tenant")
      */
-    public function tenant(int $tenantId, SerializerInterface $serializer)
+    public function getOne(int $tenantId, SerializerInterface $serializer)
     {
         $tenant = $this->tenantRepository->find($tenantId);
 
@@ -77,12 +85,18 @@ class TenantController extends AbstractController
             return $this->respond($response);
         }
 
+        $user = $this->getUser();
+
+        $powerRate = $this->powerRateRepository->findCurrentRateByOwner($user->getId());
+
         $response = [
             'tenant'    => [
                 'id'                    => $tenant->getId(),
                 'name'                  => $tenant->getName(),
                 'meterNumber'           => $tenant->getMeterNumber(),
-                'meterInitialReading'   => $tenant->getMeterInitialReading()
+                'meterInitialReading'   => $tenant->getMeterInitialReading(),
+                'created'               => $tenant->getCreated()->format('Y-m-d'),
+                'ratePerKwh'            => $powerRate->getRate(),
             ],
             'message'   => '',
         ];    
