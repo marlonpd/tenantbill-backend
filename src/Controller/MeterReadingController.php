@@ -75,7 +75,7 @@ class MeterReadingController extends AbstractController
         $meterReadings = $this->meterReadingRepository->findByTenant($tenant->getId());
 
         $response = [
-            "meterReadings" =>$this->serializer->serialize($meterReadings, 'json', ['groups' => ['primary']]),
+            "meterReadings" => $this->meterReadingRepository->transformMany($meterReadings)
         ];
 
         return $this->respond($response);
@@ -127,7 +127,7 @@ class MeterReadingController extends AbstractController
             return $this->respond($response);
         }
 
-        if (empty($meterReading->getReadingKwh())) {
+        if (empty($meterReading->getPresentReadingKwh())) {
             $response = [
                 'errors'   => 'Kwh reading is required',
             ];    
@@ -141,13 +141,13 @@ class MeterReadingController extends AbstractController
 
         $response = [
             'meterReading' => [
-                'fromDate'     => $meterReading->getFromDate()->format('Y-m-d'),
-                'toDate'       => $meterReading->getToDate()->format('Y-m-d'),
-                'readingKwh'   => $meterReading->getReadingKwh(),
-                'consumedKwh'  => $meterReading->getConsumedKwh(),
-                'rate'         => $meterReading->getRate(),
-                'bill'         => $meterReading->getBill(), 
-                'created'      => $meterReading->getCreated()->format('Y-m-d')
+                'fromDate'              => $meterReading->getFromDate()->format('Y-m-d'),
+                'previousReadingKwh'    => $meterReading->getPreviousReadingKwh(),
+                'toDate'                => $meterReading->getToDate()->format('Y-m-d'),
+                'presentReadingKwh'     => $meterReading->getPresentReadingKwh(),
+                'consumedKwh'           => $meterReading->getConsumedKwh(),
+                'ratePerKwh'            => $meterReading->getRate(),
+                'bill'                  => $meterReading->getBill()
             ],
             'message'   => 'Successfully added new power rate!',
         ];    

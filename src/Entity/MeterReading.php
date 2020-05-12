@@ -27,25 +27,31 @@ class MeterReading
      * @Groups({"primary"})
      * @ORM\Column(type="datetime", nullable=true)
      */
-    private $from_date;
-
-    /**
-     * @Groups({"primary"})
-     * @ORM\Column(type="datetime", nullable=true)
-     */
-    private $to_date;
+    private $fromDate;
 
     /**
      * @Groups({"primary"})
      * @ORM\Column(type="float")
      */
-    private $reading_kwh;
+    private $previousReadingKwh;
+
+    /**
+     * @Groups({"primary"})
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $toDate;
+
+    /**
+     * @Groups({"primary"})
+     * @ORM\Column(type="float")
+     */
+    private $presentReadingKwh;
 
     /**
      * @Groups({"primary"})
      * @ORM\Column(type="float", nullable=true)
      */
-    private $consumed_kwh;
+    private $consumedKwh;
 
     /**
      * @Groups({"primary"})
@@ -89,48 +95,60 @@ class MeterReading
 
     public function getFromDate(): ?\DateTimeInterface
     {
-        return $this->from_date;
+        return $this->fromDate;
     }
 
-    public function setFromDate(?\DateTimeInterface $from_date): self
+    public function setFromDate(?\DateTimeInterface $fromDate): self
     {
-        $this->from_date = $from_date;
+        $this->fromDate = $fromDate;
+
+        return $this;
+    }
+
+    public function getPreviousReadingKwh(): ?float
+    {
+        return $this->previousReadingKwh;
+    }
+
+    public function setPreviousReadingKwh(float $previousReadingKwh): self
+    {
+        $this->previousReadingKwh = $previousReadingKwh;
 
         return $this;
     }
 
     public function getToDate(): ?\DateTimeInterface
     {
-        return $this->to_date;
+        return $this->toDate;
     }
 
-    public function setToDate(?\DateTimeInterface $to_date): self
+    public function setToDate(?\DateTimeInterface $toDate): self
     {
-        $this->to_date = $to_date;
+        $this->toDate = $toDate;
 
         return $this;
     }
 
-    public function getReadingKwh(): ?float
+    public function getPresentReadingKwh(): ?float
     {
-        return $this->reading_kwh;
+        return $this->presentReadingKwh;
     }
 
-    public function setReadingKwh(float $reading_kwh): self
+    public function setPresentReadingKwh(float $presentReadingKwh): self
     {
-        $this->reading_kwh = $reading_kwh;
+        $this->presentReadingKwh = $presentReadingKwh;
 
         return $this;
     }
 
     public function getConsumedKwh(): ?float
     {
-        return $this->consumed_kwh;
+        return $this->consumedKwh;
     }
 
-    public function setConsumedKwh(?float $consumed_kwh): self
+    public function setConsumedKwh(?float $consumedKwh): self
     {
-        $this->consumed_kwh = $consumed_kwh;
+        $this->consumedKwh = $consumedKwh;
 
         return $this;
     }

@@ -37,17 +37,37 @@ class MeterReadingRepository extends ServiceEntityRepository
         $data =json_decode($request->getContent(), true);
 
         $meterReading = new MeterReading();
+
+        $previousReading = (float)$data['previousReading'];
+        $presentReading = (float)$data['presentReading'];
+        $consumedKwh = $presentReading - $previousReading;
+        $ratePerKwh = (float)$data['ratePerKwh'];
+        $bill = $ratePerKwh * $consumedKwh;
   
         $meterReading->setTenant($tenant);
         $meterReading->setFromDate(new \DateTime($data['previousReadingDate']));
-        $meterReading->setToDate(new \DateTime($data['currentReadingDate']));
-        $meterReading->setReadingKwh($data['currentReading']);
-        $meterReading->setConsumedKwh($data['kwhConsumed']);
-        $meterReading->setRate($data['ratePerKwh']);
-        $bill = (float)$data['ratePerKwh'] * (float)$data['currentReading'];
+        $meterReading->setPreviousReadingKwh($previousReading);
+        $meterReading->setToDate(new \DateTime($data['presentReadingDate']));
+        $meterReading->setPresentReadingKwh($presentReading);
+        $meterReading->setConsumedKwh($consumedKwh);
+        $meterReading->setRate($ratePerKwh);
         $meterReading->setBill($bill);
 
         return $meterReading;
+    }
+
+    public function transformMany($meterReadings): ?array {
+        return array_map(function ($meterReading){
+            return [
+                'fromDate'              => $meterReading->getFromDate()->format('Y-m-d'),
+                'previousReadingKwh'    => $meterReading->getPreviousReadingKwh(),
+                'toDate'                => $meterReading->getToDate()->format('Y-m-d'),
+                'presentReadingKwh'     => $meterReading->getPresentReadingKwh(),
+                'consumedKwh'           => $meterReading->getConsumedKwh(),
+                'ratePerKwh'                  => $meterReading->getRate(),
+                'bill'                  => $meterReading->getBill()
+            ];
+        }, $meterReadings);
     }
 
     public function getLastInsertedByOwner(int $tenantId): MeterReading
