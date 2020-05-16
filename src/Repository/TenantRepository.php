@@ -6,6 +6,7 @@ use App\Entity\Tenant;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\MeterReadingRepository;
 
 /**
  * @method Tenant|null find($id, $lockMode = null, $lockVersion = null)
@@ -15,9 +16,19 @@ use Doctrine\ORM\EntityManagerInterface;
  */
 class TenantRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry, EntityManagerInterface $entityManager)
+
+    /**
+     * @var MeterReadingRepository
+     */
+    private $meterReadingRepository;
+
+
+    public function __construct(ManagerRegistry $registry, 
+        EntityManagerInterface $entityManager, 
+        MeterReadingRepository $meterReadingRepository)
     {
         $this->entityManager = $entityManager;
+        $this->meterReadingRepository = $meterReadingRepository;
         parent::__construct($registry, Tenant::class);
     }
     /**
@@ -53,6 +64,36 @@ class TenantRepository extends ServiceEntityRepository
             ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult() !== null ? true : false;
+    }
+
+
+    public function remove($tenant) {
+        $this->entityManager->remove($tenant);
+        $this->entityManager->flush();
+    }
+
+    public function transformMany($tenants): ?array {
+        $self = $this;
+        return array_map(function ($tenant) use ($self){
+            $meterReading = $self->meterReadingRepository->getLastInsertedByOwner($tenant->getId());
+
+            $reading = new \stdClass();
+            if (!is_null($meterReading)) {
+                $reading->id = $meterReading->getId();
+                $reading->previousReadingDate = $meterReading->getFromDate()->format('Y-m-d');
+                $reading->previousReading = $meterReading->getPresentReadingKwh();
+                $reading->consumedKwh = $meterReading->getConsumedKwh();
+            }
+
+            return [
+                'id'                    => $tenant->getId(),
+                'name'                  => $tenant->getName(),
+                'meterNumber'           => $tenant->getMeterNumber(),
+                'meterInitialReading'   => $tenant->getMeterInitialReading(),
+                'created'               => $tenant->getCreated()->format('Y-m-d'),
+                'meterReadings'         => $reading,
+            ];
+        }, $tenants);
     }
 
     /*public function find($id): Tenant

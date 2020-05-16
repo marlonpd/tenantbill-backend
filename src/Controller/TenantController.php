@@ -63,7 +63,7 @@ class TenantController extends AbstractController
         $tenants = $this->tenantRepository->findAll();
 
         $response = [
-            'tenants'   => $this->serializer->serialize($tenants, 'json', ['groups' => ['primary']]),
+            'tenants'   => $this->tenantRepository->transformMany($tenants),
             'message'   => '',
         ];    
 
@@ -73,7 +73,7 @@ class TenantController extends AbstractController
     /**
      * @Route("/api/tenant/{tenantId}/get", methods={"GET"}, name="fetch_tenant")
      */
-    public function getOne(int $tenantId, SerializerInterface $serializer)
+    public function getOne(int $tenantId)
     {
         $tenant = $this->tenantRepository->find($tenantId);
 
@@ -99,6 +99,55 @@ class TenantController extends AbstractController
                 'ratePerKwh'            => $powerRate->getRate(),
             ],
             'message'   => '',
+        ];    
+
+        return $this->respond($response);
+    }
+
+    /**
+     * @Route("/api/tenant/update", methods={"POST"}, name="update_tenant")
+     */
+    public function remove(Request $request)
+    {
+        $tenant = $this->tenantRepository->find($request->id);
+
+        if (empty($tenant)) {
+            $response = [
+                'errors'   => 'Tenant not found!',
+            ];    
+    
+            return $this->respond($response);
+        }
+
+        $this->tenantRepository->remove($tenant);
+
+        $response = [
+            'message'   => 'success',
+        ];    
+
+        return $this->respond($response);
+    }
+
+
+    /**
+     * @Route("/api/tenant/delete", methods={"POST"}, name="delete_tenant")
+     */
+    public function remove(Request $request)
+    {
+        $tenant = $this->tenantRepository->find($request->id);
+
+        if (empty($tenant)) {
+            $response = [
+                'errors'   => 'Tenant not found!',
+            ];    
+    
+            return $this->respond($response);
+        }
+
+        $this->tenantRepository->remove($tenant);
+
+        $response = [
+            'message'   => 'success',
         ];    
 
         return $this->respond($response);

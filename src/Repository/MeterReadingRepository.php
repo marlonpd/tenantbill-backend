@@ -64,13 +64,13 @@ class MeterReadingRepository extends ServiceEntityRepository
                 'toDate'                => $meterReading->getToDate()->format('Y-m-d'),
                 'presentReadingKwh'     => $meterReading->getPresentReadingKwh(),
                 'consumedKwh'           => $meterReading->getConsumedKwh(),
-                'ratePerKwh'                  => $meterReading->getRate(),
+                'ratePerKwh'            => $meterReading->getRate(),
                 'bill'                  => $meterReading->getBill()
             ];
         }, $meterReadings);
     }
 
-    public function getLastInsertedByOwner(int $tenantId): MeterReading
+    public function getLastInsertedByOwner(int $tenantId): ?MeterReading
     {
         return $this->createQueryBuilder('m')
             ->where('m.tenant = :tenantId')
