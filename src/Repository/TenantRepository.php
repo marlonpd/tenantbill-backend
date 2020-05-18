@@ -72,6 +72,18 @@ class TenantRepository extends ServiceEntityRepository
         $this->entityManager->flush();
     }
 
+    public function transform($tenant) {
+        return [
+            'id'                    => $tenant->getId(),
+            'name'                  => $tenant->getName(),
+            'meterNumber'           => $tenant->getMeterNumber(),
+            'meterInitialReading'   => $tenant->getMeterInitialReading(),
+            'created'               => $tenant->getCreated()->format('Y-m-d')
+        ];
+
+
+    }
+
     public function transformMany($tenants): ?array {
         $self = $this;
         return array_map(function ($tenant) use ($self){

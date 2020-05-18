@@ -58,7 +58,7 @@ class TenantController extends AbstractController
     /**
      * @Route("/api/tenants", methods={"GET"}, name="fetch_tenants")
      */
-    public function index(SerializerInterface $serializer)
+    public function index()
     {
         $tenants = $this->tenantRepository->findAll();
 
@@ -90,15 +90,9 @@ class TenantController extends AbstractController
         $powerRate = $this->powerRateRepository->findCurrentRateByOwner($user->getId());
 
         $response = [
-            'tenant'    => [
-                'id'                    => $tenant->getId(),
-                'name'                  => $tenant->getName(),
-                'meterNumber'           => $tenant->getMeterNumber(),
-                'meterInitialReading'   => $tenant->getMeterInitialReading(),
-                'created'               => $tenant->getCreated()->format('Y-m-d'),
-                'ratePerKwh'            => $powerRate->getRate(),
-            ],
-            'message'   => '',
+            'tenant'        => $this->tenantRepository->transform($tenant),
+            'ratePerKwh'    => $powerRate->getRate(),
+            'message'       => '',
         ];    
 
         return $this->respond($response);
@@ -107,7 +101,7 @@ class TenantController extends AbstractController
     /**
      * @Route("/api/tenant/update", methods={"POST"}, name="update_tenant")
      */
-    public function remove(Request $request)
+    public function update(Request $request)
     {
         $tenant = $this->tenantRepository->find($request->id);
 
@@ -156,7 +150,7 @@ class TenantController extends AbstractController
     /**
      * @Route("/api/tenant/create", methods={"POST"}, name="create_tenant")
      */
-    public function create(Request $request, SerializerInterface $serializer)
+    public function create(Request $request)
     {
         $user = $this->getUser();
 
@@ -175,11 +169,7 @@ class TenantController extends AbstractController
         $tenant = $this->tenantRepository->getLastInserted($user->getId());
 
         $response = [
-            'tenant'    => [
-                'id'            => $tenant->getId(),
-                'name'          => $tenant->getName(),
-                'meterNumber'   => $tenant->getMeterNumber()
-            ],
+            'tenant'    => $this->tenantRepository->transform($tenant),
             'message'   => 'Successfully added new tenant!',
         ];    
 
